@@ -45,7 +45,7 @@ const HomeScreen = () => {
 	useEffect(() => {
 		setLoading(true);
 		getAllPendingFunctions();
-	}, []);
+	}, [token]);
 
 	const Item = ({ user, date, type }) => {
 		return (

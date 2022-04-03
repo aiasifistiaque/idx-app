@@ -10,7 +10,9 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import useAuth from '../hooks/useAuth';
 import ProfileScreen from '../screens/ProfileScreen';
-import { FontAwesome } from '@expo/vector-icons';
+import BlankScreen from '../screens/BlankScreen';
+import { Ionicons, FontAwesome5, FontAwesome } from '@expo/vector-icons';
+import WalletScreen from '../screens/WalletScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -45,12 +47,26 @@ const MainTab = () => {
 				tabBarIcon: ({ focused, color, size }) => {
 					let iconName;
 
-					if (route.name === 'Home') {
-						iconName = focused ? 'home' : 'home';
-					} else if (route.name === 'Requests') {
-						iconName = focused ? 'check-square-o' : 'check-square-o';
+					if (route.name === 'Wallet') {
+						return <Ionicons name='shield-outline' size={size} color={color} />;
+					} else if (route.name === 'Notification') {
+						return (
+							<Ionicons
+								name='notifications-outline'
+								size={size}
+								color={color}
+							/>
+						);
+					} else if (route.name === 'Discover') {
+						return (
+							<Ionicons name='compass-outline' size={size} color={color} />
+						);
+					} else if (route.name === 'History') {
+						return (
+							<FontAwesome5 name='exchange-alt' size={size} color={color} />
+						);
 					} else if (route.name === 'Profile') {
-						iconName = focused ? 'user' : 'user';
+						iconName = focused ? 'user-o' : 'user-o';
 					}
 
 					// You can return any component that you like here!
@@ -59,10 +75,21 @@ const MainTab = () => {
 				tabBarActiveTintColor: '#0078e7',
 				tabBarInactiveTintColor: 'gray',
 			})}>
-			<Tab.Screen name='Home' component={HomeScreen} />
-			<Tab.Screen name='Requests' component={AcceptCredentialStack} />
+			<Tab.Screen name='Wallet' component={WalletStack} />
+			<Tab.Screen name='Notification' component={AcceptCredentialStack} />
+			<Tab.Screen name='Discover' component={BlankScreen} />
+			<Tab.Screen name='History' component={BlankScreen} />
 			<Tab.Screen name='Profile' component={ProfileScreen} />
 		</Tab.Navigator>
+	);
+};
+
+const WalletStack = () => {
+	return (
+		<Stack.Navigator screenOptions={{ headerShown: false }}>
+			<Stack.Screen name='WalletHome' component={WalletScreen} />
+			<Stack.Screen name='Credentials' component={HomeScreen} />
+		</Stack.Navigator>
 	);
 };
 
