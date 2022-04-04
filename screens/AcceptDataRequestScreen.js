@@ -9,8 +9,9 @@ import {
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import * as lib from '../lib/constants';
+import { Feather } from '@expo/vector-icons';
 
-const ApproveScreen = ({ route, navigation }) => {
+const AcceptDataRequestScreen = ({ route, navigation }) => {
 	const [loading, setLoading] = useState(true);
 	const [data, setData] = useState({});
 	const [approveLoading, setApproveLoading] = useState(false);
@@ -26,27 +27,26 @@ const ApproveScreen = ({ route, navigation }) => {
 			};
 
 			const { data } = await axios.put(
-				`${lib.api.backend}/issue/${id}`,
+				`${lib.api.backend}/verify/request`,
 				{
 					status: 'approved',
+					id: route.params.id,
 				},
 				config
 			);
 
-			console.log('button Pressed');
-
 			setData(data);
-			setLoading(false);
+			setApproveLoading(false);
 		} catch (error) {
 			console.log(error);
-			setLoading(false);
+			setApproveLoading(false);
 		}
 	};
 
 	const getCred = async () => {
 		try {
 			const { data } = await axios.get(
-				`${lib.api.backend}/issue/${route.params.id}`
+				`${lib.api.backend}/verify/request/${route.params.id}`
 			);
 
 			setData(data);
@@ -64,21 +64,35 @@ const ApproveScreen = ({ route, navigation }) => {
 
 	return (
 		<View style={styles.container}>
-			<ScrollView style={{ padding: 16 }}>
-				<Text style={styles.heading}>Approve Credential</Text>
+			<ScrollView style={{ paddingVetical: 16 }}>
+				<Text style={styles.heading}>Data Request</Text>
 
-				{/* <Text>{route.params.id}</Text> */}
 				{!loading && (
 					<View style={styles.top}>
-						<Text style={styles.heading}>
-							{data.issuer} wants to issue your {data.credentialType}
+						<Text style={styles.headingtwo}>
+							{data.issuer} is requesting for the following information
 						</Text>
-						<Text style={{ marginTop: 16 }}>
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-							eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-							enim ad minim veniam, quis nostrud exercitation ullamco laboris
-							nisi ut aliquip ex ea commodo consequat.
-						</Text>
+						{data.attributes?.map((item, i) => (
+							<View
+								key={i}
+								style={{
+									paddingVertical: 16,
+									paddingHorizontal: 32,
+									backgroundColor: 'whitesmoke',
+									marginVertical: 4,
+									marginHorizontal: -24,
+									display: 'flex',
+									flexDirection: 'row',
+									alignItems: 'center',
+									justifyContent: 'space-between',
+								}}>
+								<Text
+									style={{ fontSize: 16, fontWeight: '600', color: '#333333' }}>
+									{item}
+								</Text>
+								<Feather name='check-square' size={24} color='#39BE4F' />
+							</View>
+						))}
 					</View>
 				)}
 				<Text style={{ marginHorizontal: 24, textAlign: 'center' }}>
@@ -89,7 +103,7 @@ const ApproveScreen = ({ route, navigation }) => {
 					<View style={styles.buttons}>
 						{data?.status == 'approved' ? (
 							<>
-								<Text>Credential Approved Successfully!</Text>
+								<Text>Request Approved</Text>
 								<TouchableOpacity
 									style={styles.no}
 									onPress={() => navigation.goBack()}>
@@ -118,6 +132,10 @@ const ApproveScreen = ({ route, navigation }) => {
 						)}
 					</View>
 				)}
+
+				{/* <Text style={{ marginTop: 20 }}>
+					data received {JSON.stringify(data)}
+				</Text> */}
 			</ScrollView>
 		</View>
 	);
@@ -131,16 +149,19 @@ const styles = StyleSheet.create({
 	},
 	top: {
 		borderRadius: 10,
-		borderWidth: 1,
-		borderColor: 'rgba(0,0,0,.1)',
-		marginVertical: 32,
-		padding: 16,
-		paddingVertical: 64,
+		marginVertical: 8,
+		marginHorizontal: 24,
 	},
 	heading: {
+		fontSize: 20,
+		fontWeight: '700',
+		marginHorizontal: 24,
+		marginVertical: 16,
+	},
+	headingtwo: {
 		fontSize: 18,
 		fontWeight: '700',
-		marginBottom: 4,
+		marginBottom: 16,
 	},
 	buttons: {
 		display: 'flex',
@@ -167,4 +188,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default ApproveScreen;
+export default AcceptDataRequestScreen;

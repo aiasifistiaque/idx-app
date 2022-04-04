@@ -10,6 +10,7 @@ import React, { useState, useEffect } from 'react';
 import * as lib from '../lib/constants';
 import axios from 'axios';
 import useAuth from '../hooks/useAuth';
+import moment from 'moment';
 
 const NotificationScreen = ({ navigation }) => {
 	const [loading, setLoading] = useState(true);
@@ -23,7 +24,7 @@ const NotificationScreen = ({ navigation }) => {
 		};
 		try {
 			const { data } = await axios.get(
-				`${lib.api.backend}/issue/user?status=pending`,
+				`${lib.api.backend}/notifications`,
 				config
 			);
 			setData(data);
@@ -46,14 +47,51 @@ const NotificationScreen = ({ navigation }) => {
 		getAllPendingFunctions();
 	}, [token]);
 
-	const Item = ({ user, date, type, id }) => {
+	const Date = ({ children }) => {
+		return (
+			<Text
+				style={{
+					marginTop: 8,
+					fontWeight: '500',
+					fontSize: 12,
+					color: 'rgba(0,0,0,.4)',
+				}}>
+				{moment(children).calendar()}
+			</Text>
+		);
+	};
+
+	const Notification = ({ children }) => {
+		return (
+			<Text
+				style={{
+					fontWeight: '600',
+					fontSize: 14,
+					color: 'rgba(0,0,0,.9)',
+				}}>
+				{children}
+			</Text>
+		);
+	};
+
+	const Item = ({ user, date, target }) => {
 		return (
 			<TouchableOpacity
 				style={styles.item}
-				onPress={() => navigation.navigate('Approve', { id })}>
-				<Text>
-					{user} wants to issue your {type}
-				</Text>
+				onPress={() => navigation.navigate('Approve', { id: target })}>
+				<Notification>{user} wants to issue you a new credential</Notification>
+				<Date>{date}</Date>
+			</TouchableOpacity>
+		);
+	};
+
+	const ApproveItem = ({ user, date, target }) => {
+		return (
+			<TouchableOpacity
+				style={styles.item}
+				onPress={() => navigation.navigate('DataRequest', { id: target })}>
+				<Notification>{user} is requesting for your information</Notification>
+				<Date>{date}</Date>
 			</TouchableOpacity>
 		);
 	};
@@ -66,14 +104,23 @@ const NotificationScreen = ({ navigation }) => {
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 				}>
 				{!loading &&
-					data?.map((item, i) => (
-						<Item
-							key={i}
-							user={item.issuer}
-							type={item.credentialType}
-							id={item._id}
-						/>
-					))}
+					data?.map((item, i) =>
+						item.type == 'assign' ? (
+							<Item
+								key={i}
+								user={item.issuer}
+								target={item.target}
+								date={item.createdAt}
+							/>
+						) : (
+							<ApproveItem
+								key={i}
+								user={item.issuer}
+								target={item.target}
+								date={item.createdAt}
+							/>
+						)
+					)}
 			</ScrollView>
 		</View>
 	);

@@ -13,6 +13,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import BlankScreen from '../screens/BlankScreen';
 import { Ionicons, FontAwesome5, FontAwesome } from '@expo/vector-icons';
 import WalletScreen from '../screens/WalletScreen';
+import AcceptDataRequestScreen from '../screens/AcceptDataRequestScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -96,8 +97,9 @@ const WalletStack = () => {
 const AcceptCredentialStack = () => {
 	return (
 		<Stack.Navigator>
-			<Stack.Screen name='Notofication' component={NotificationScreen} />
+			<Stack.Screen name='Notifications' component={NotificationScreen} />
 			<Stack.Screen name='Approve' component={ApproveScreen} />
+			<Stack.Screen name='DataRequest' component={AcceptDataRequestScreen} />
 		</Stack.Navigator>
 	);
 };
