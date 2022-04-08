@@ -11,8 +11,9 @@ import axios from 'axios';
 import * as lib from '../lib/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useAuth from '../hooks/useAuth';
+import { H4, H5 } from '../components/text';
 
-const HomeScreen = () => {
+const HomeScreen = ({ route, navigation }) => {
 	const [loading, setLoading] = useState(true);
 	const [data, setData] = useState([]);
 	const { token } = useAuth();
@@ -24,7 +25,7 @@ const HomeScreen = () => {
 		};
 		try {
 			const { data } = await axios.get(
-				`${lib.api.backend}/issue/user?status=approved`,
+				`${lib.api.backend}/issue/user?status=approved&category=${route.params.category}`,
 				config
 			);
 			setData(data);
@@ -45,11 +46,13 @@ const HomeScreen = () => {
 	useEffect(() => {
 		setLoading(true);
 		getAllPendingFunctions();
-	}, [token]);
+	}, [token, route]);
 
-	const Item = ({ user, date, type }) => {
+	const Item = ({ user, date, type, item }) => {
 		return (
-			<TouchableOpacity style={styles.item}>
+			<TouchableOpacity
+				style={styles.item}
+				onPress={() => navigation.navigate('Credential', { credential: item })}>
 				<Text>
 					{type} by {user}
 				</Text>
@@ -64,10 +67,29 @@ const HomeScreen = () => {
 				refreshControl={
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 				}>
-				{!loading &&
+				{!loading && data.length < 1 ? (
+					<View
+						style={{
+							display: 'flex',
+							flex: 1,
+							alignItems: 'center',
+							justifyContent: 'center',
+							marginTop: 256,
+						}}>
+						<H5 style={{ textAlign: 'center', color: '#777' }}>
+							No credentials issued
+						</H5>
+					</View>
+				) : (
 					data?.map((item, i) => (
-						<Item key={i} user={item.issuer} type={item.credentialType} />
-					))}
+						<Item
+							key={i}
+							user={item.issuer.name}
+							type={item.credentialType}
+							item={item}
+						/>
+					))
+				)}
 			</ScrollView>
 		</SafeAreaView>
 	);

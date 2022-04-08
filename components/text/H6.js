@@ -1,19 +1,21 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { Text } from 'react-native';
 import { colors } from '../../styles';
 
-const H6 = ({ children, style }) => {
-	return <Text style={[styles.text, { ...style }]}>{children}</Text>;
+const H6 = ({ children, style, size, weight, color }) => {
+	return (
+		<Text
+			style={{
+				fontSize: size || 16,
+				lineHeight: 24,
+				textTransform: 'capitalize',
+				color: color || colors.black,
+				fontWeight: weight || '700',
+				...style,
+			}}>
+			{children}
+		</Text>
+	);
 };
-
-const styles = StyleSheet.create({
-	text: {
-		fontSize: 16,
-		lineHeight: 24,
-		color: colors.black,
-		fontWeight: '700',
-		textTransform: 'capitalize',
-	},
-});
 
 export default H6;

@@ -2,12 +2,12 @@ import React from 'react';
 import { Text } from 'react-native';
 import { colors } from '../../styles';
 
-const H4 = ({ children, style, color, weight, size }) => {
+const H3 = ({ children, style, color, weight, size, lineHeight }) => {
 	return (
 		<Text
 			style={{
-				fontSize: size || 24,
-				lineHeight: 36,
+				fontSize: size || 28,
+				lineHeight: lineHeight ? lineHeight : size ? size * 1.5 : 42,
 				color: color || colors.black,
 				fontWeight: weight || '800',
 				...style,
@@ -17,4 +17,4 @@ const H4 = ({ children, style, color, weight, size }) => {
 	);
 };
 
-export default H4;
+export default H3;

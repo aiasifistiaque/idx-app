@@ -16,7 +16,7 @@ const ApproveScreen = ({ route, navigation }) => {
 	const [approveLoading, setApproveLoading] = useState(false);
 	const { id } = route.params;
 
-	const approve = async () => {
+	const approve = async option => {
 		setApproveLoading(true);
 		try {
 			const config = {
@@ -28,7 +28,8 @@ const ApproveScreen = ({ route, navigation }) => {
 			const { data } = await axios.put(
 				`${lib.api.backend}/issue/${id}`,
 				{
-					status: 'approved',
+					status: option,
+					notification: route.params.notification,
 				},
 				config
 			);
@@ -71,7 +72,7 @@ const ApproveScreen = ({ route, navigation }) => {
 				{!loading && (
 					<View style={styles.top}>
 						<Text style={styles.heading}>
-							{data.issuer} wants to issue your {data.credentialType}
+							{data.issuer.name} wants to issue your {data.credentialType}
 						</Text>
 						<Text style={{ marginTop: 16 }}>
 							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -89,7 +90,25 @@ const ApproveScreen = ({ route, navigation }) => {
 					<View style={styles.buttons}>
 						{data?.status == 'approved' ? (
 							<>
-								<Text>Credential Approved Successfully!</Text>
+								<Text>Request Approved Successfully!</Text>
+								<TouchableOpacity
+									style={styles.no}
+									onPress={() => navigation.goBack()}>
+									<Text style={{ fontWeight: '700' }}>Go Back</Text>
+								</TouchableOpacity>
+							</>
+						) : data?.status == 'rejected' ? (
+							<>
+								<Text>Request has been rejected!</Text>
+								<TouchableOpacity
+									style={styles.no}
+									onPress={() => navigation.goBack()}>
+									<Text style={{ fontWeight: '700' }}>Go Back</Text>
+								</TouchableOpacity>
+							</>
+						) : data?.status == 'denied' ? (
+							<>
+								<Text>Request verification failed!</Text>
 								<TouchableOpacity
 									style={styles.no}
 									onPress={() => navigation.goBack()}>
@@ -98,14 +117,16 @@ const ApproveScreen = ({ route, navigation }) => {
 							</>
 						) : (
 							<>
-								<TouchableOpacity
-									style={styles.no}
-									onPress={() => navigation.goBack()}>
-									<Text style={{ fontWeight: '700' }}>No,Thanks!</Text>
-								</TouchableOpacity>
+								{!loading && (
+									<TouchableOpacity
+										style={styles.no}
+										onPress={() => !approveLoading && approve('rejected')}>
+										<Text style={{ fontWeight: '700' }}>No,Thanks!</Text>
+									</TouchableOpacity>
+								)}
 								<TouchableOpacity
 									style={styles.approve}
-									onPress={() => !approveLoading && approve()}>
+									onPress={() => !approveLoading && approve('approved')}>
 									{approveLoading ? (
 										<ActivityIndicator size='small' color='#fff' />
 									) : (

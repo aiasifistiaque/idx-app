@@ -10,27 +10,31 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import * as lib from '../lib/constants';
 import { Feather } from '@expo/vector-icons';
+import useAuth from '../hooks/useAuth';
 
 const AcceptDataRequestScreen = ({ route, navigation }) => {
 	const [loading, setLoading] = useState(true);
 	const [data, setData] = useState({});
 	const [approveLoading, setApproveLoading] = useState(false);
 	const { id } = route.params;
+	const auth = useAuth();
 
-	const approve = async () => {
+	const approve = async option => {
 		setApproveLoading(true);
 		try {
 			const config = {
 				headers: {
 					'Content-Type': 'application/json',
+					authorization: auth.token,
 				},
 			};
 
 			const { data } = await axios.put(
 				`${lib.api.backend}/verify/request`,
 				{
-					status: 'approved',
+					status: option,
 					id: route.params.id,
+					notification: route.params.notification,
 				},
 				config
 			);
@@ -70,22 +74,10 @@ const AcceptDataRequestScreen = ({ route, navigation }) => {
 				{!loading && (
 					<View style={styles.top}>
 						<Text style={styles.headingtwo}>
-							{data.issuer} is requesting for the following information
+							{data.issuer.name} is requesting for the following information
 						</Text>
 						{data.attributes?.map((item, i) => (
-							<View
-								key={i}
-								style={{
-									paddingVertical: 16,
-									paddingHorizontal: 32,
-									backgroundColor: 'whitesmoke',
-									marginVertical: 4,
-									marginHorizontal: -24,
-									display: 'flex',
-									flexDirection: 'row',
-									alignItems: 'center',
-									justifyContent: 'space-between',
-								}}>
+							<View key={i} style={styles.attribute}>
 								<Text
 									style={{ fontSize: 16, fontWeight: '600', color: '#333333' }}>
 									{item}
@@ -95,7 +87,8 @@ const AcceptDataRequestScreen = ({ route, navigation }) => {
 						))}
 					</View>
 				)}
-				<Text style={{ marginHorizontal: 24, textAlign: 'center' }}>
+				<Text
+					style={{ marginHorizontal: 24, textAlign: 'center', marginTop: 24 }}>
 					By accepting the credentials you agree with the service provider{`'`}s{' '}
 					terms {`&`} conditions
 				</Text>
@@ -110,16 +103,36 @@ const AcceptDataRequestScreen = ({ route, navigation }) => {
 									<Text style={{ fontWeight: '700' }}>Go Back</Text>
 								</TouchableOpacity>
 							</>
-						) : (
+						) : data?.status == 'denied' ? (
 							<>
+								<Text>Request Verificationn Failed</Text>
 								<TouchableOpacity
 									style={styles.no}
 									onPress={() => navigation.goBack()}>
-									<Text style={{ fontWeight: '700' }}>No,Thanks!</Text>
+									<Text style={{ fontWeight: '700' }}>Go Back</Text>
 								</TouchableOpacity>
+							</>
+						) : data?.status == 'rejected' ? (
+							<>
+								<Text>Request Rejected</Text>
+								<TouchableOpacity
+									style={styles.no}
+									onPress={() => navigation.goBack()}>
+									<Text style={{ fontWeight: '700' }}>Go Back</Text>
+								</TouchableOpacity>
+							</>
+						) : (
+							<>
+								{!loading && (
+									<TouchableOpacity
+										style={styles.no}
+										onPress={() => !approveLoading && approve('rejected')}>
+										<Text style={{ fontWeight: '700' }}>No,Thanks!</Text>
+									</TouchableOpacity>
+								)}
 								<TouchableOpacity
 									style={styles.approve}
-									onPress={() => !approveLoading && approve()}>
+									onPress={() => !approveLoading && approve('approved')}>
 									{approveLoading ? (
 										<ActivityIndicator size='small' color='#fff' />
 									) : (
@@ -151,6 +164,17 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		marginVertical: 8,
 		marginHorizontal: 24,
+	},
+	attribute: {
+		paddingVertical: 16,
+		paddingHorizontal: 32,
+		backgroundColor: 'whitesmoke',
+		marginVertical: 4,
+		marginHorizontal: -24,
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
 	},
 	heading: {
 		fontSize: 20,

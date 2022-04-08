@@ -19,6 +19,7 @@ const NotificationScreen = ({ navigation }) => {
 	const [refreshing, setRefreshing] = useState(false);
 
 	const getAllPendingFunctions = async e => {
+		setLoading(true);
 		const config = {
 			headers: { 'Content-Type': 'application/json', authorization: token },
 		};
@@ -45,7 +46,7 @@ const NotificationScreen = ({ navigation }) => {
 	useEffect(() => {
 		setLoading(true);
 		getAllPendingFunctions();
-	}, [token]);
+	}, [token, refreshing]);
 
 	const Date = ({ children }) => {
 		return (
@@ -61,11 +62,11 @@ const NotificationScreen = ({ navigation }) => {
 		);
 	};
 
-	const Notification = ({ children }) => {
+	const Notification = ({ children, status }) => {
 		return (
 			<Text
 				style={{
-					fontWeight: '600',
+					fontWeight: status == 'pending' ? '800' : '500',
 					fontSize: 14,
 					color: 'rgba(0,0,0,.9)',
 				}}>
@@ -74,23 +75,37 @@ const NotificationScreen = ({ navigation }) => {
 		);
 	};
 
-	const Item = ({ user, date, target }) => {
+	const Item = ({ user, date, target, status, notification }) => {
 		return (
 			<TouchableOpacity
-				style={styles.item}
-				onPress={() => navigation.navigate('Approve', { id: target })}>
-				<Notification>{user} wants to issue you a new credential</Notification>
+				style={[
+					{ backgroundColor: status == 'pending' ? 'whitesmoke' : 'white' },
+					styles.item,
+				]}
+				onPress={() =>
+					navigation.navigate('Approve', { id: target, notification })
+				}>
+				<Notification status={status}>
+					{user.name} wants to issue you a new credential
+				</Notification>
 				<Date>{date}</Date>
 			</TouchableOpacity>
 		);
 	};
 
-	const ApproveItem = ({ user, date, target }) => {
+	const ApproveItem = ({ user, date, target, status, notification }) => {
 		return (
 			<TouchableOpacity
-				style={styles.item}
-				onPress={() => navigation.navigate('DataRequest', { id: target })}>
-				<Notification>{user} is requesting for your information</Notification>
+				style={[
+					{ backgroundColor: status == 'pending' ? 'whitesmoke' : 'white' },
+					styles.item,
+				]}
+				onPress={() =>
+					navigation.navigate('DataRequest', { id: target, notification })
+				}>
+				<Notification status={status}>
+					{user.name} is requesting for your information
+				</Notification>
 				<Date>{date}</Date>
 			</TouchableOpacity>
 		);
@@ -111,6 +126,8 @@ const NotificationScreen = ({ navigation }) => {
 								user={item.issuer}
 								target={item.target}
 								date={item.createdAt}
+								status={item.status}
+								notification={item._id}
 							/>
 						) : (
 							<ApproveItem
@@ -118,6 +135,8 @@ const NotificationScreen = ({ navigation }) => {
 								user={item.issuer}
 								target={item.target}
 								date={item.createdAt}
+								status={item.status}
+								notification={item._id}
 							/>
 						)
 					)}
@@ -130,19 +149,19 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: '#fff',
-		padding: 24,
 	},
 	heading: {
 		fontSize: 18,
 		fontWeight: '700',
 		marginBottom: 4,
+		paddingHorizontal: 24,
+		marginTop: 24,
+		marginBottom: 12,
 	},
 	item: {
-		borderWidth: 1,
-		borderColor: 'rgba(0,0,0,.08)',
-		borderRadius: 10,
 		padding: 24,
-		marginVertical: 4,
+		paddingVertical: 32,
+		marginVertical: 2,
 	},
 });
 
