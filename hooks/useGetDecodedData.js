@@ -20,7 +20,7 @@ const useGetDecodedData = credential => {
 		try {
 			const res = await axios.post(
 				`${lib.api.backend}/decode`,
-				{ credential: credential },
+				{ credential: credential.token, data: credential },
 				config
 			);
 			setData(res.data);

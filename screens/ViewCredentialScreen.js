@@ -14,7 +14,7 @@ import useGetDecodedData from '../hooks/useGetDecodedData';
 
 const ViewCredentialScreen = ({ route }) => {
 	const { credential } = route.params;
-	const { loading, error, data } = useGetDecodedData(credential.token);
+	const { loading, error, data } = useGetDecodedData(credential);
 	return (
 		<SafeAreaView style={styles.container}>
 			<ScrollView style={styles.scroll}>
@@ -55,7 +55,7 @@ const ViewCredentialScreen = ({ route }) => {
 						<P size={14} weight='500' color={lib.colors.textLight}>
 							Wallet Address
 						</P>
-						<H6>Ox7F10972315c34c6DdaeAF36d2a0A</H6>
+						<H6>{credential?.issuer?.wallet && credential.issuer.wallet}</H6>
 					</View>
 				</View>
 			</ScrollView>

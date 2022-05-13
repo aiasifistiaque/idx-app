@@ -15,6 +15,7 @@ import { Ionicons, FontAwesome5, FontAwesome } from '@expo/vector-icons';
 import WalletScreen from '../screens/WalletScreen';
 import AcceptDataRequestScreen from '../screens/AcceptDataRequestScreen';
 import ViewCredentialScreen from '../screens/ViewCredentialScreen';
+import ScannerScreen from '../screens/ScannerScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -92,6 +93,7 @@ const WalletStack = () => {
 			<Stack.Screen name='WalletHome' component={WalletScreen} />
 			<Stack.Screen name='Credentials' component={HomeScreen} />
 			<Stack.Screen name='Credential' component={ViewCredentialScreen} />
+			<Stack.Screen name='Scanner' component={ScannerScreen} />
 		</Stack.Navigator>
 	);
 };

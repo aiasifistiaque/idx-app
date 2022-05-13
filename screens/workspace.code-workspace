@@ -1,22 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "../../../../../react-native/VincentApp"
-		},
-		{
-			"path": "../../../../vincent"
-		},
-		{
 			"path": "../../../../thinkcrypt/khudegolpo"
-		},
-		{
-			"path": "../../../../thinkcrypt/pos"
 		},
 		{
 			"path": "../.."
 		},
 		{
-			"path": "../../../../think"
+			"path": "../../../../thinkcrypt/pos"
 		}
 	],
 	"settings": {}
